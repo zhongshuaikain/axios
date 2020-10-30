@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+
+  //  axios({
+  //    url: "http://123.207.32.32:8000/home/multidata",
+  //    param: {
+  //      id: 1,
+  //      name: "zhangsan"
+  //    },
+  //    data: "post"
+  //  }).then(res => {
+  //    console.log(res)
+  //  })
+
+  axios({
+    url: "http://123.207.32.32:8000/home/multidata",
+    params:{
+      id:1,
+      name:"zhangsan"
+    },
+    method:"post"
+  }).then(res=>{
+    console.log(res)
+  })
+
+</script>
+
+</body>
+</html>

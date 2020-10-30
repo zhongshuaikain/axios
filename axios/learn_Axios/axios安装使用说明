@@ -1,0 +1,145 @@
+安装axios安装：
+    npm install axios --save
+
+axios的基本使用：
+    默认使用get请求方式发送无参请求：
+      axios({
+        url: "http://123.207.32.32:8000/home/multidata"
+      }).then(res=>{
+        console.log(res)
+      })
+
+
+     修改请求方式为post发送无参请求:
+       axios({
+         url: "http://123.207.32.32:8000/home/multidata"
+         method:"post"
+       }).then(res=>{
+         console.log(res)
+       })
+
+
+     post有参传值，方法一：
+     修改请求方式为post发送携带参数的请求(使用 data传递):
+       axios({
+         url: "http://123.207.32.32:8000/home/multidata"
+         data:{
+            id:1,
+            name:"zhangsan"
+         }
+         method:"post"
+       }).then(res=>{
+         console.log(res)
+       })
+
+     post有参传值，方法二：
+     修改请求方式为post发送携带参数的请求:
+       axios({
+         url: "http://123.207.32.32:8000/home/multidata"
+         params:{
+            id:1,
+            name:"zhangsan"
+         }
+         method:"post"
+       }).then(res=>{
+         console.log(res)
+       })
+     ⚠️：当axios发送post请求时，如果利用data进行数据传递，后台接受到的值是null,因为post携带参数默认使用的是application.json格式
+           为了解决该问题，我们一般将data属性改为params属性进行传值，但是需注意的是这种传递方法会将值暴露在浏览器端，不安全。
+     ⚠️data传值引起后端服务器拿到null值的三种解决方式：⚠️
+          解决方式一、 将data属性改为data进行数据传递
+                    缺点：
+                        1.不安全，不推荐使用
+                        2.使用data属性传值，后台需要将axios自动转换的json数据转换成java对象,需要修改后台代码，加注解类@requestBody
+    ❤️❤️❤️ 解决方式二、 在post.axios中传递参数 "name = 张三 & id = 1" (推荐使用，只需要修改前端传值，后台不需要进行修改)
+
+          解决方式三、 服务器端给接受参数加上@requestBody
+
+axios的请求方式：
+    直接使用axios.get()进行有参请求：
+          axios.get('url', {params: {id: 1}} ).then(res=>{})
+
+    ⚠️解决方式二举例：
+    直接使用axios.post()进行有参请求：( name = 张三 & id = 1 )
+          axios.post('url', {id = 1 & name = zhangsan} ).then(res=>{})
+
+   ⚠️解决方式三举例：
+    直接使用axios.post()进行有参请求：( id : 1 & name : zhangsan )
+          axios.post('url', {id : 1 & name : zhangsan} ).then(res=>{})
+          这种方法相当于 post有参传值，方法一中的data传值方法，传递到服务器的值会是null
+          要解决这个问题，一般是从服务端进行解决，后台需要将axios数据转化为java对象，一般将后台参数传递位置，将参数改为对象，在对象之前加@RequestBody注解进行转化
+
+
+
+
+
+
+
+axios并发处理请求
+    使用 axios.all可以放入多个请求的数组
+    axios.all([])返回的结果是一个数组，使用axios.spread可将数组[res1,res2]展开为res1,res2
+    方法一：返回一个合并的数组
+          axios.all([
+              axios.get("url"),
+              axios.get("url", {
+                  params: {type: xxx, page: xxx}})，
+              axios.post("url",{name='zs',id=1})
+            ]).then(res=>{
+              console.log(res)
+            }).catch(err=>{})
+    方法二：返回一个展开的数组
+           axios.all([
+              axios.get("url"),
+              axios.get("url", {
+                  params: {type: xxx, page: xxx}})，
+              axios.post("url",{name='zs',id=1})
+            ]).then(axios.spread[arr1,arr2,arr3]=>{
+              console.log(arr1),
+              console.log(arr2),
+              console.log(arr3)
+            }).catch(err=>{})
+
+axios全局配置:
+    在开发中许多参数是固定的，这时候我们可以进行一些抽取，也可以利用axios的全局配置
+    axios.default.baseURL = '公共url'
+    axios.default.timeout = '设置请求时间'
+    axios.default.header.post['Content-Type'] = 'application/x-www-form-urlencoded';
+
+创建axios实例
+    var newVar = axios.create({
+        baseURL: 'http://123.207.32.32:8000',
+        timeout: 5000
+    })
+
+    newVar({
+        url: "home/multidata"
+    }).then(res => {
+      console.log(res)
+    })
+
+    axios拦截器
+        axios拦截器主要用于我们在网络 请求或者响应 时对操作进行相应的处理
+
+        axios.interceptors.request.use(config=>{
+            console.log('进入请求拦截器')
+            return config;
+        },err=>{
+            console.log("请求拦截失败！")
+            console.log(err)
+        })
+
+        axios.interceptors.response.use(config=>{
+            console.log('进入响应拦截器')
+            return config;
+        },err=>{
+            console.log("响应拦截失败！")
+            console.log(err)
+        })
+
+  axios.get("http://123.207.32.32:8000/home/multidata",{params:{name:'zhangsan'}}).then(
+      res=>{
+        console.log('res='+res)
+      }
+  )
+
+
